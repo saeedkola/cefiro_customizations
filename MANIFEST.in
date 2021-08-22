@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include cefiro_customizations *.css
+recursive-include cefiro_customizations *.csv
+recursive-include cefiro_customizations *.html
+recursive-include cefiro_customizations *.ico
+recursive-include cefiro_customizations *.js
+recursive-include cefiro_customizations *.json
+recursive-include cefiro_customizations *.md
+recursive-include cefiro_customizations *.png
+recursive-include cefiro_customizations *.py
+recursive-include cefiro_customizations *.svg
+recursive-include cefiro_customizations *.txt
+recursive-exclude cefiro_customizations *.pyc
