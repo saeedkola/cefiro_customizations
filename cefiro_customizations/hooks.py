@@ -35,6 +35,7 @@ app_license = "MIT"
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+doctype_js = {"Purchase Receipt" : "public/js/purchase_receipt.js"}
 
 # Home Pages
 # ----------
@@ -96,6 +97,12 @@ app_license = "MIT"
 # 		"on_trash": "method"
 #	}
 # }
+doc_events ={
+	"Purchase Receipt":{
+		"on_submit": "cefiro_customizations.events.on_submit_purchase_receipt",
+		"before_cancel": "cefiro_customizations.events.before_cancel_purchase_receipt"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
