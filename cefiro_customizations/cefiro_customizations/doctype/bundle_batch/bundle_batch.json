@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "autoname": "format:BB-{YY}{MM}{DD}-{###}",
+ "creation": "2021-08-24 14:54:21.075528",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "product_bundle",
+  "posting_date",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "product_bundle",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Product Bundle",
+   "options": "Product Bundle",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Datetime",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bundle Batch",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2021-08-24 15:10:04.575740",
+ "modified_by": "Administrator",
+ "module": "Cefiro Customizations",
+ "name": "Bundle Batch",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

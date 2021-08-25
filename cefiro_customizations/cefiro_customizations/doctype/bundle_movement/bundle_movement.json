@@ -7,9 +7,11 @@
  "field_order": [
   "date",
   "product_bundle",
+  "bundle_batch",
   "qty",
   "ref_doctype",
   "ref_docname",
+  "bundle_items",
   "amended_from"
  ],
  "fields": [
@@ -56,12 +58,24 @@
    "fieldtype": "Data",
    "label": "Reference Document",
    "reqd": 1
+  },
+  {
+   "fieldname": "bundle_batch",
+   "fieldtype": "Data",
+   "label": "Batch"
+  },
+  {
+   "fieldname": "bundle_items",
+   "fieldtype": "Table",
+   "label": "Bundle Items",
+   "options": "Bundle Movement Item",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-08-23 00:11:48.463791",
+ "modified": "2021-08-24 14:37:18.529768",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Movement",
