@@ -21,6 +21,7 @@
   {
    "fieldname": "batch",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Batch",
    "options": "Batch"
   },
@@ -35,7 +36,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-08-24 14:36:51.903577",
+ "modified": "2021-08-25 18:40:32.355108",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Movement Item",

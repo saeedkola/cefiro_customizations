@@ -13,7 +13,6 @@ frappe.ui.form.on('Product Bundle', {
 
 
 function button_clicked(frm,cdt,cdn){
-    
 
     if (frm.doc.item_template){
         var args = {
@@ -50,8 +49,7 @@ function button_clicked(frm,cdt,cdn){
                             var itemsTable = frm.add_child("items");
                             frappe.model.set_value(itemsTable.doctype, itemsTable.name, "item_code", selections[row]);               
                         }
-                        
-                        frm.refresh_fields("items")
+                        frm.refresh_fields("items");
                     }
                 });                
                 
