@@ -6,12 +6,13 @@ def get_items_from_bundle_inserter(bundle_list):
 	unified_list = []
 	bundle_list = json.loads(bundle_list)
 	for bundle in bundle_list:
-		product_bundle = frappe.get_doc("Product Bundle", bundle['product_bundle'])
-		for item in product_bundle.items:
-			unified_list.append({
-				"item_code": item.item_code,
-				"qty": item.qty*bundle['bundle_qty']
-				})
+		if "product_bundle" in bundle.keys():
+			product_bundle = frappe.get_doc("Product Bundle", bundle['product_bundle'])
+			for item in product_bundle.items:
+				unified_list.append({
+					"item_code": item.item_code,
+					"qty": item.qty*bundle['bundle_qty']
+					})
 
 	consolidated_list = {}
 	for row in unified_list:
@@ -70,3 +71,10 @@ def before_cancel_purchase_receipt(doc,methodName=None):
 		bm = frappe.get_doc("Bundle Movement", bm.name)
 		bm.docstatus = 2
 		bm.save(ignore_permissions = True)
+		frappe.delete_doc("Bundle Movement", bm.name)
+
+def check_if_batch_set(doc,methodName=None):
+	if doc.variant_of and (not doc.has_batch_no):
+		if frappe.db.get_value("Item",doc.variant_of,"has_batch_no"):
+			doc.has_batch_no = 1
+

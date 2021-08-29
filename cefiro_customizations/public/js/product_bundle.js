@@ -8,8 +8,32 @@ frappe.ui.form.on('Product Bundle', {
             }
         })
     },
-    insert_items: button_clicked
+    insert_items: button_clicked,
+    create_item: create_item
 });
+
+function create_item(frm,cdt,cdn){
+    var items =[]
+    frm.doc.items.forEach(function(item,index){
+        if(item.item_code){
+            items.push({
+                item_code: item.item_code,
+                qty: item.qty
+            });
+        }
+        
+    });
+    frappe.call({
+        method: "cefiro_customizations.filters.create_bundle_name",
+        args: {"items": items},
+        callback: function(r){
+            console.log(r.message);
+            frm.set_value('new_item_code',r.message[2]);
+            frm.refresh_fields('new_item_code');           
+        }
+    })
+    // console.log(items)
+}
 
 
 function button_clicked(frm,cdt,cdn){
@@ -47,7 +71,8 @@ function button_clicked(frm,cdt,cdn){
                         console.log(selections);
                         for (const row in selections){
                             var itemsTable = frm.add_child("items");
-                            frappe.model.set_value(itemsTable.doctype, itemsTable.name, "item_code", selections[row]);               
+                            frappe.model.set_value(itemsTable.doctype, itemsTable.name, "item_code", selections[row]);
+                            frappe.model.set_value(itemsTable.doctype, itemsTable.name, "qty", 1);
                         }
                         frm.refresh_fields("items");
                     }

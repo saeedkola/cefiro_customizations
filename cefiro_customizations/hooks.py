@@ -104,6 +104,9 @@ doc_events ={
 	"Purchase Receipt":{
 		"on_submit": "cefiro_customizations.events.on_submit_purchase_receipt",
 		"before_cancel": "cefiro_customizations.events.before_cancel_purchase_receipt"
+	},
+	"Item":{
+		"before_insert": "cefiro_customizations.events.check_if_batch_set"
 	}
 }
 
