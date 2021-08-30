@@ -48,7 +48,7 @@ def on_submit_purchase_receipt(doc,methodName = None):
 			bundle_items.append({
 				"item_code": bundle_item.item_code,
 				"batch"	: batch_of[bundle_item.item_code],
-				"qty"	: bundle_item.qty
+				"qty"	: bundle_item.qty*row.bundle_qty
 				})
 
 
