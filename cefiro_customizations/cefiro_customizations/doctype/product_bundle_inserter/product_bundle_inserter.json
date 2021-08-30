@@ -28,15 +28,16 @@
   },
   {
    "fieldname": "bundle_batch",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Bundle Batch",
-   "read_only": 1
+   "options": "Bundle Batch"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-08-24 14:38:10.460121",
+ "modified": "2021-08-29 20:05:42.392934",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Product Bundle Inserter",

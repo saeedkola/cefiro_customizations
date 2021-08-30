@@ -6,9 +6,10 @@ import frappe
 def execute(filters=None):
 
 	sqlq = """select item_code,qty,batch from (
-	  select BMI.item_code,BMI.qty,BMI.batch,2 SortOrder from `tabBundle Movement Item` BMI
+	  select BMI.item_code,sum(BMI.qty) qty,BMI.batch,2 SortOrder from `tabBundle Movement Item` BMI
 	  inner join `tabBundle Movement` BM on BMI.parent = BM.name
 	  where BM.ref_docname = '{dn}' and BM.ref_doctype = '{dt}'
+	  group by BMI.item_code,BMI.batch
 	  union 
 	  select product_bundle,qty,bundle_batch,1 SortOrder from `tabBundle Movement`
 	  where ref_docname ='{dn}' and ref_doctype ='{dt}') f
