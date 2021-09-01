@@ -44,6 +44,7 @@
    "reqd": 1
   },
   {
+   "default": "0",
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -53,7 +54,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-09-01 12:45:00.366616",
+ "modified": "2021-09-01 15:54:19.563494",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Product Bundle Inserter",

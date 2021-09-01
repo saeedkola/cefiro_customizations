@@ -37,7 +37,7 @@ def get_item_details_from_bundle_inserter(bundle_list):
 	if len(pb_list) > 1:
 		pb_tuple = tuple(pb_list)
 	else:
-		pb_tuple = "({})".format(pb_list[0])
+		pb_tuple = "('{}')".format(pb_list[0])
 
 	sqlq = """SELECT t2.parent,t2.item_code,t2.qty,t3.item_name,t3.description,t3.gst_hsn_code,t3.stock_uom,t3.stock_uom as uom FROM `tabProduct Bundle`t1 
 			INNER JOIN `tabProduct Bundle Item` t2
