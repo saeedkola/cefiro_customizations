@@ -23,6 +23,40 @@ def get_items_from_bundle_inserter(bundle_list):
 
 	return consolidated_list
 
+@frappe.whitelist()
+def get_item_details_from_bundle_inserter(bundle_list):
+	pb_list = []
+	pb_dict = {}
+	for bundle in json.loads(bundle_list):
+		pb_list.append(bundle['product_bundle'])
+		pb_dict[bundle['product_bundle']] = {
+			"bundle_qty" 	: bundle['bundle_qty'],
+			"bundle_rate"	: bundle['rate'],
+			"warehouse"	 	: bundle['warehouse']
+		}
+	if len(pb_list) > 1:
+		pb_tuple = tuple(pb_list)
+	else:
+		pb_tuple = "({})".format(pb_list[0])
+
+	sqlq = """SELECT t2.parent,t2.item_code,t2.qty,t3.item_name,t3.description,t3.gst_hsn_code,t3.stock_uom,t3.stock_uom as uom FROM `tabProduct Bundle`t1 
+			INNER JOIN `tabProduct Bundle Item` t2
+			ON t1.name=t2.parent
+			LEFT JOIN `tabItem` t3
+			ON t2.item_code = t3.name
+			where t1.name IN {list}""".format(list=pb_tuple)
+
+	item_details = frappe.db.sql(sqlq,as_dict=1)
+	for item in item_details:		
+		item['received_qty'] = item['qty'] = item['qty']*pb_dict[item['parent']]["bundle_qty"]
+		item['rate'] = pb_dict[item['parent']]["bundle_rate"]
+		item['warehouse'] = pb_dict[item['parent']]['warehouse']
+		item['conversion_factor'] = 1
+		del item['parent']
+
+	return item_details
+
+
 def validate_purchase_receipt(doc,methodName = None):
 	pass
 

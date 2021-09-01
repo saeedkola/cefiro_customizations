@@ -12,6 +12,8 @@ frappe.ui.form.on('Product Bundle', {
     create_item: create_item
 });
 
+//Add filter to child item code, maintain_stock:!
+
 function create_item(frm,cdt,cdn){
     var items =[]
     frm.doc.items.forEach(function(item,index){
