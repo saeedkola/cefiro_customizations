@@ -1,7 +1,17 @@
-// frappe.ui.form.on('Product Bundle Inserter', {
-//     product_bundle: pbi_changed,
-//     bundle_qty    : pbi_changed
-// });
+frappe.ui.form.on('Product Bundle Inserter', {
+    product_bundle: function(frm,cdt,cdn){
+      var item = locals[cdt][cdn];
+      console.log(item.product_bundle);
+      $.each(frm.doc.product_bundle_inserter,function(key,row){
+        if ((item.product_bundle == row.product_bundle)&&(item.idx != row.idx)){
+          let dup1 = item.idx;
+          let dup2 = row.idx;
+          let message = `Duplicates row ${dup1} and ${dup2}`;
+          frappe.throw(__(message));
+        }
+      });
+    }
+});
 frappe.ui.form.on('Purchase Receipt',{
     get_items: function(frm,cdt,cdn){
       if(frm.doc.set_warehouse && frm.doc.product_bundle_inserter){
@@ -46,10 +56,31 @@ frappe.ui.form.on('Purchase Receipt',{
           });
         });
       }
-    }
-    ,
-    validate: set_default_warehouse
+    },
+    validate: validate
 });
+
+function validate(frm,cdt,cdn){
+  check_for_duplicate_bundles(frm,cdt,cdn);
+  set_default_warehouse(frm,cdt,cdn);
+  
+}
+
+function check_for_duplicate_bundles(frm,cdt,cdn){
+  $.each(frm.doc.product_bundle_inserter,function(key,item){
+    $.each(frm.doc.product_bundle_inserter,function(key,row){
+      if ((item.product_bundle == row.product_bundle)&&(item.idx != row.idx)){
+        let dup1 = item.idx;
+        let dup2 = row.idx;
+        let message = `Duplicates row ${dup1} and ${dup2}`;
+        frappe.throw(__(message));
+        return false;
+      }
+    });
+  });
+}
+
+
 
 function set_default_warehouse(frm,cdt,cdn){
   $.each(frm.doc.product_bundle_inserter||[],function(key,row){

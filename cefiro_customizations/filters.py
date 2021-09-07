@@ -94,4 +94,22 @@ def create_bundle_name(items):
 	# variant_of
 	# 	colour
 	# 		size Qty
-	# 			pack of {qty}   
+	# 			pack of {qty}
+
+@frappe.whitelist()
+def get_bundle_quantity(product_bundle,bundle_batch=None,warehouse=None):
+	sqlq ="""SELECT sum(qty) as qty FROM `tabBundle Movement` 
+		WHERE product_bundle='{product_bundle}' and docstatus=1""".format(product_bundle=product_bundle)
+	if bundle_batch:
+		sqlq += """ and bundle_batch='{bundle_batch}'""".format(bundle_batch=bundle_batch)
+	if warehouse:
+		sqlq += """ and warehouse='{warehouse}'""".format(warehouse=warehouse)
+
+	sqlq += ";"
+
+	qty = frappe.db.sql(sqlq,as_dict=1)
+
+	return qty
+	
+
+

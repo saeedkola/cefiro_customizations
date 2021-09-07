@@ -37,7 +37,8 @@ app_license = "MIT"
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 doctype_js = {
 	"Purchase Receipt" 	: "public/js/purchase_receipt.js",
-	"Product Bundle"	: "public/js/product_bundle.js"
+	"Product Bundle"	: "public/js/product_bundle.js",
+	"Delivery Note"		: "public/js/delivery_note.js"
 	}
 
 # Home Pages
@@ -104,6 +105,10 @@ doc_events ={
 	"Purchase Receipt":{
 		"on_submit": "cefiro_customizations.events.on_submit_purchase_receipt",
 		"before_cancel": "cefiro_customizations.events.before_cancel_purchase_receipt"
+	},
+	"Delivery Note":{
+		"on_submit": "cefiro_customizations.events.on_submit_delivery_note",
+		"before_cancel": "cefiro_customizations.events.before_cancel_delivery_note"
 	},
 	"Item":{
 		"before_insert": "cefiro_customizations.events.check_if_batch_set"

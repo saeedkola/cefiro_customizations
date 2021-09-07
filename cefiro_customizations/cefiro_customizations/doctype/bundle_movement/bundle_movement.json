@@ -9,6 +9,7 @@
   "product_bundle",
   "bundle_batch",
   "qty",
+  "warehouse",
   "ref_doctype",
   "ref_docname",
   "bundle_items",
@@ -70,12 +71,19 @@
    "label": "Bundle Items",
    "options": "Bundle Movement Item",
    "reqd": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-08-24 14:37:18.529768",
+ "modified": "2021-09-04 10:12:23.817607",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Movement",
