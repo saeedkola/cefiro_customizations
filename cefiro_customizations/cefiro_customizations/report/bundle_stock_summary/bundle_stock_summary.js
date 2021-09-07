@@ -4,6 +4,15 @@
 
 frappe.query_reports["Bundle Stock Summary"] = {
 	"filters": [
-
+		{
+			"fieldname"	: "batch_wise",
+			"label"		: "Group by Batch",
+			"fieldtype"	: "Check",		
+		},
+		{
+			"fieldname"	: "warehouse",
+			"label"		: "Group by warehouse",
+			"fieldtype"	: "Check",		
+		}
 	]
 };
