@@ -110,6 +110,14 @@ def get_bundle_quantity(product_bundle,bundle_batch=None,warehouse=None):
 	qty = frappe.db.sql(sqlq,as_dict=1)
 
 	return qty
+
+@frappe.whitelist()
+def get_details_from_bundle_batch(batch):
+	sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) qty 
+			FROM `tabBundle Movement` 
+			where bundle_batch="{batch}"
+			group by warehouse;""".format(batch=batch)
+	return frappe.db.sql(sqlq,as_dict=1)
 	
 
 

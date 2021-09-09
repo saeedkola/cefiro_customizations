@@ -24,17 +24,21 @@ def get_items_from_bundle_inserter(bundle_list):
 	return consolidated_list
 
 @frappe.whitelist()
-def get_item_details_from_bundle_inserter(bundle_list):
+def get_item_details_from_bundle_inserter(bundle_list,set_warehouse=None,delivery_date=None):
 	pb_list = []
 	pb_dict = {}
 	for bundle in json.loads(bundle_list):
 		pb_list.append(bundle['product_bundle'])
 		pb_dict[bundle['product_bundle']] = {
 			"bundle_qty" 	: bundle['bundle_qty'],
-			"bundle_rate"	: bundle['rate'],
-			"warehouse"	 	: bundle['warehouse']
+			"bundle_rate"	: bundle['rate']
 		}
-		
+		if 'warehouse' in bundle.keys():
+			pb_dict[bundle['product_bundle']]['warehouse'] = bundle['warehouse']
+		elif set_warehouse:
+			pb_dict[bundle['product_bundle']]['warehouse'] = set_warehouse
+
+
 	if len(pb_list) > 1:
 		pb_tuple = tuple(pb_list)
 	else:
@@ -52,6 +56,8 @@ def get_item_details_from_bundle_inserter(bundle_list):
 		item['received_qty'] = item['qty'] = item['qty']*pb_dict[item['parent']]["bundle_qty"]
 		item['rate'] = pb_dict[item['parent']]["bundle_rate"]
 		item['warehouse'] = pb_dict[item['parent']]['warehouse']
+		if delivery_date:
+			item['delivery_date'] = delivery_date
 		item['conversion_factor'] = 1
 		del item['parent']
 

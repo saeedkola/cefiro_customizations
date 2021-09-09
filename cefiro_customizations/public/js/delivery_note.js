@@ -28,22 +28,102 @@ frappe.ui.form.on('Delivery Note',{
     validate:function(frm,cdt,cdn){
     	set_default_warehouse(frm,cdt,cdn);
     	validate_pbi(frm,cdt,cdn);
-    }
+    },
+    scan_bundle_batch_barcode: on_batch_trigger
 });
 
-function validate_pbi(frm,cdt,cdn){
-  var ret;
+function on_batch_trigger(frm,cdt,cdn){
+  if(frm.doc.scan_bundle_batch_barcode){
+    frappe.call({
+      method: "cefiro_customizations.filters.get_details_from_bundle_batch",
+      args:{
+        batch: frm.doc.scan_bundle_batch_barcode
+      },
+      callback: function(r){
+        console.log(r.message);
+        var res = r.message;
+        if(res.length){
+          if (res.length > 1){
+            // res_array = []
+            // for (batch in res){
+            //   res_array.push(res.bundle_batch);
+            // }
+            // new frappe.ui.form.MultiSelectDialog({
+            //   doctype: "Warehouse",
+            //   target: frm,
+            //   setters:{
+            //   },              
+            //   get_query() {
+            //       return {
+            //           filters:{
+            //               name: ["in",res_array]
+            //           }                      
+            //       };
+            //   },
+            //   action(selections) {
+            //       console.log(selections);
+            //       for (const row in selections){
+            //           var itemsTable = frm.add_child("items");                      
+            //       }          
+            //   }
+            // }); 
+          }else{           
+            add_child_to_pbi(res[0].product_bundle,res[0].bundle_batch,res[0].warehouse,frm.doc.product_bundle_inserter);
+            frm.set_value("scan_bundle_batch_barcode","");
+            $("[data-fieldname=scan_bundle_batch_barcode]").focus();
+
+          }
+        }
+      }
+    });
+  }
+}
+
+function add_child_to_pbi(product_bundle,batch,warehouse,pbi){
+  var check = check_if_exists_in_pbi(batch,warehouse,pbi);
+  console.log(check);
+  if(!check){
+    var bundle = cur_frm.add_child("product_bundle_inserter");
+    bundle.product_bundle = product_bundle;
+    bundle.bundle_batch = batch;
+    bundle.warehouse = warehouse;
+    cur_frm.refresh_field("product_bundle_inserter");
+  } 
+  
+}
+
+
+function check_if_exists_in_pbi(batch,warehouse,pbi){
+  var key = 0;
+  console.log(pbi);
+    for(const row in pbi){
+      console.log(pbi[row]);
+      if(pbi[row].bundle_batch == batch){
+        if(pbi[row].warehouse == warehouse){
+          cur_frm.get_field("product_bundle_inserter").grid.grid_rows[row].doc.bundle_qty = pbi[row].bundle_qty+1;
+          cur_frm.get_field("product_bundle_inserter").grid.grid_rows[row].refresh_field("bundle_qty");
+          return true;
+
+        }      
+      }
+      key++;
+    }
+   
+  return false;
+}
+
+function validate_pbi(frm,cdt,cdn){  
   $.each(frm.doc.product_bundle_inserter,function(key,row){
     if(!row.product_bundle || !row.bundle_batch || !row.warehouse){
       let row_no = row.idx;
       let message = `Mandatory fields not set in row {row_no}`;
       frappe.throw(__(message));
-      ret = false;
-    }else{
-      ret = true;
+      return false;
+
+      
     }
   });
-  return ret;
+  return true;
 }
 
 //bundle batch filter based on available qty
@@ -81,7 +161,7 @@ frappe.ui.form.on('Product Bundle Inserter', {
     var row = locals[cdt][cdn];
     if (row.bundle_qty > row.available_qty){
       let row_no = row.idx;
-      let message = `Available Qty less than Bundle Qty in row {row_no}`;
+      let message = `Available Qty less than Bundle Qty in row ${row_no}`;
       frappe.msgprint(__(message));
     }
   }

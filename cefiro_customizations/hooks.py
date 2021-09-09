@@ -38,7 +38,8 @@ app_license = "MIT"
 doctype_js = {
 	"Purchase Receipt" 	: "public/js/purchase_receipt.js",
 	"Product Bundle"	: "public/js/product_bundle.js",
-	"Delivery Note"		: "public/js/delivery_note.js"
+	"Delivery Note"		: "public/js/delivery_note.js",
+	"Sales Order"		: "public/js/sales_order.js"
 	}
 
 # Home Pages

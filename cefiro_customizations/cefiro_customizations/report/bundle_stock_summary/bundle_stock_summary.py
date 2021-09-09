@@ -8,7 +8,7 @@ def execute(filters=None):
 		sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) as qty FROM `tabBundle Movement` 
 			group by product_bundle, bundle_batch,warehouse ORDER BY product_bundle;"""
 		columns = [
-			"Bundle:Link/Product Bundle:300",
+			"Bundle:Link/Product Bundle:500",
 			"Bundle Batch:Data:200",
 			"Warehouse:Link/Warehouse:100",
 			"Quantity:Int:100"
@@ -18,7 +18,7 @@ def execute(filters=None):
 			sqlq ="""SELECT product_bundle,bundle_batch,sum(qty) as qty FROM `tabBundle Movement` 
 					group by product_bundle, bundle_batch ORDER BY product_bundle;"""
 			columns = [
-				"Bundle:Link/Product Bundle:300",
+				"Bundle:Link/Product Bundle:500",
 				"Bundle Batch:Data:200",
 				"Quantity:Int:100"
 			]
@@ -27,7 +27,7 @@ def execute(filters=None):
 				group by product_bundle, warehouse ORDER BY product_bundle;"""
 
 			columns = [
-				"Bundle:Link/Product Bundle:300",			
+				"Bundle:Link/Product Bundle:500",			
 				"Warehouse:Link/Warehouse:100",
 				"Quantity:Int:100"
 			]
@@ -36,7 +36,7 @@ def execute(filters=None):
 				group by product_bundle, warehouse ORDER BY product_bundle;"""
 
 			columns = [
-				"Bundle:Link/Product Bundle:300",				
+				"Bundle:Link/Product Bundle:500",				
 				"Quantity:Int:100"
 			]
 

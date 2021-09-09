@@ -19,27 +19,9 @@ frappe.ui.form.on('Purchase Receipt',{
         frappe.call({
           method: "cefiro_customizations.events.get_item_details_from_bundle_inserter",
           args: {
-            bundle_list : frm.doc.product_bundle_inserter,
-            set_warehouse: frm.doc.set_warehouse
+            bundle_list : frm.doc.product_bundle_inserter
           },
           callback: function(r){
-            // frm.set_value("items",[])
-            // var response = r.message
-            // for (const row in response){
-            //     // var itemsTable = frm.add_child("items");
-            //     // frappe.model.set_value(itemsTable.doctype, itemsTable.name, "item_code", row);
-            //     // frappe.model.set_value(itemsTable.doctype, itemsTable.name, "qty", response[row]);
-            //     items.push({
-            //       "item_code":row,
-            //       "qty": response[row]
-            //     })            
-            // } 
-            // var items = [];
-            // frm.set_value("items",[]);
-            // for (const row in r.message){
-            //   items.push(r.message[row]);
-            //   console.log(r.message[row]);
-            // }
             frm.set_value("items",r.message);
             frm.refresh_field("items");
             // console.log(frm.doc.items);
@@ -79,7 +61,6 @@ function check_for_duplicate_bundles(frm,cdt,cdn){
     });
   });
 }
-
 
 
 function set_default_warehouse(frm,cdt,cdn){
