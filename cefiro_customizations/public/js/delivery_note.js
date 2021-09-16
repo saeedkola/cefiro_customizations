@@ -194,5 +194,4 @@ function get_available_qty(frm,cdt,cdn){
       }
     })
   }
-
 }
