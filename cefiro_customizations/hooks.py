@@ -104,6 +104,7 @@ doctype_js = {
 # }
 doc_events ={
 	"Purchase Receipt":{
+		"before_submit": "cefiro_customizations.events.before_submit_purchase_receipt",
 		"on_submit": "cefiro_customizations.events.on_submit_purchase_receipt",
 		"before_cancel": "cefiro_customizations.events.before_cancel_purchase_receipt"
 	},

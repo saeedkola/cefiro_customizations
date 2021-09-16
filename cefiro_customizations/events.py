@@ -91,6 +91,16 @@ def get_item_details_from_bundle_inserter_delivery_note(bundle_list):
 def validate_purchase_receipt(doc,methodName = None):
 	pass
 
+def before_submit_purchase_receipt(doc,methodName = None):
+	#force all batch numbers in one transaction for an item code to be same
+	batch_dict = {}
+	for item in doc.items:
+		if item.item_code in batch_dict.keys():
+			if item.batch_no and item.batch_no != batch_dict[item.item_code]:
+				item.batch_no = batch_dict[item.item_code]
+		else:
+			batch_dict[item.item_code] = item.batch_no
+
 def on_submit_purchase_receipt(doc,methodName = None):
 	batch_of = {}
 	for pr_item in doc.items:
