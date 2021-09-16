@@ -56,6 +56,7 @@ def get_item_details_from_bundle_inserter(bundle_list,set_warehouse=None,deliver
 		item['received_qty'] = item['qty'] = item['qty']*pb_dict[item['parent']]["bundle_qty"]
 		item['rate'] = pb_dict[item['parent']]["bundle_rate"]
 		item['warehouse'] = pb_dict[item['parent']]['warehouse']
+		item['created_from_bundle'] = 1
 		if delivery_date:
 			item['delivery_date'] = delivery_date
 		item['conversion_factor'] = 1
