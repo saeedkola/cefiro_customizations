@@ -65,7 +65,7 @@ def get_item_details_from_bundle_inserter(bundle_list,set_warehouse=None,deliver
 	return item_details
 
 @frappe.whitelist()
-def get_item_details_from_bundle_inserter_delivery_note(bundle_list):
+def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=None):
 	item_list = []
 	for bundle in json.loads(bundle_list):
 		sqlq = """select b.item_code,b.qty*{bundle_qty}/a.qty qty,b.batch as batch_no, t3.item_name,t3.description,t3.gst_hsn_code,t3.stock_uom as uom,t3.stock_uom, a.warehouse
@@ -82,9 +82,14 @@ def get_item_details_from_bundle_inserter_delivery_note(bundle_list):
 					product_bundle = bundle['product_bundle'])
 
 		items = frappe.db.sql(sqlq, as_dict=1)
-		if bundle['rate']:
+		if bundle['rate'] or sales_order:
 			for item in items:
-				item['rate'] = bundle['rate']
+				if bundle['rate']:
+					item['rate'] = bundle['rate']
+
+				if sales_order:
+					item['against_sales_order'] = sales_order
+					
 		item_list += items
 	return item_list
 
@@ -173,6 +178,20 @@ def on_submit_delivery_note(doc,methodName=None):
 		})
 		bm.save(ignore_permissions=True)
 		bm.submit()
+
+def before_cancel_delivery_note(doc,methodName=None):
+	bm_list = frappe.get_all("Bundle Movement",
+		filters = {
+			"ref_doctype": "Delivery Note",
+			"ref_docname": doc.name,
+			"docstatus": 1
+		}
+	)
+	for bm in bm_list:
+		bm = frappe.get_doc("Bundle Movement", bm.name)
+		bm.docstatus = 2
+		bm.save(ignore_permissions = True)
+		frappe.delete_doc("Bundle Movement", bm.name)
 
 def before_cancel_purchase_receipt(doc,methodName=None):
 	bm_list = frappe.get_all("Bundle Movement",

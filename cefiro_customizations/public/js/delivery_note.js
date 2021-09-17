@@ -6,7 +6,8 @@ frappe.ui.form.on('Delivery Note',{
           frappe.call({
             method: "cefiro_customizations.events.get_item_details_from_bundle_inserter_delivery_note",
             args: {
-              bundle_list : frm.doc.product_bundle_inserter
+              bundle_list : frm.doc.product_bundle_inserter,
+              sales_order: frm.doc.against_sales_order
             },
             callback: function(r){        
               frm.set_value("items",r.message);
