@@ -5,4 +5,10 @@
 from frappe.model.document import Document
 
 class BundleTransfer(Document):
-	pass
+	def on_submit(self):
+		#create Bundle movement entry
+
+		#create stock transfer entry
+		pass
+	def validate(self):
+		pass
