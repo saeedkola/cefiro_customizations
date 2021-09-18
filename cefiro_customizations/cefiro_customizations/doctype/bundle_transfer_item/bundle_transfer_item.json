@@ -10,7 +10,8 @@
   "from_warehouse",
   "to_warehouse",
   "quantity",
-  "available_qty"
+  "available_qty",
+  "stock_entry"
  ],
  "fields": [
   {
@@ -63,12 +64,19 @@
    "in_list_view": 1,
    "label": "Available Qty",
    "read_only": 1
+  },
+  {
+   "fieldname": "stock_entry",
+   "fieldtype": "Link",
+   "label": "Stock Entry Ref",
+   "options": "Stock Entry",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-09-16 09:34:03.528667",
+ "modified": "2021-09-18 02:24:11.098728",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Transfer Item",

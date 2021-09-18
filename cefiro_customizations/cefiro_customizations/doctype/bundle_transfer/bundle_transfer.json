@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "autoname": "BNTRF.#####",
  "creation": "2021-09-10 15:14:00.445860",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -13,7 +14,8 @@
   "to_warehouse",
   "section_break_7",
   "scan_bundle_batch_barcode",
-  "product_bundles"
+  "product_bundles",
+  "amended_from"
  ],
  "fields": [
   {
@@ -67,11 +69,21 @@
    "label": "Product Bundles",
    "options": "Bundle Transfer Item",
    "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bundle Transfer",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2021-09-16 09:43:29.423952",
+ "modified": "2021-09-18 00:30:35.287587",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Transfer",

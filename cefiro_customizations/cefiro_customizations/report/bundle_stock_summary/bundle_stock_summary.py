@@ -6,6 +6,7 @@ import frappe
 def execute(filters=None):
 	if filters.batch_wise and filters.warehouse:
 		sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) as qty FROM `tabBundle Movement` 
+			where docstatus=1
 			group by product_bundle, bundle_batch,warehouse ORDER BY product_bundle;"""
 		columns = [
 			"Bundle:Link/Product Bundle:500",

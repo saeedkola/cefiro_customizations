@@ -68,7 +68,7 @@ def get_item_details_from_bundle_inserter(bundle_list,set_warehouse=None,deliver
 def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=None):
 	item_list = []
 	for bundle in json.loads(bundle_list):
-		sqlq = """select b.item_code,b.qty*{bundle_qty}/a.qty qty,b.batch as batch_no, t3.item_name,t3.description,t3.gst_hsn_code,t3.stock_uom as uom,t3.stock_uom, a.warehouse
+		sqlq = """select b.item_code,b.qty*{bundle_qty}/a.qty qty,b.batch as batch_no, 1 as created_from_bundle,t3.item_name,t3.description,t3.gst_hsn_code,t3.stock_uom as uom,t3.stock_uom, a.warehouse
 				from `tabBundle Movement` a
 				inner join `tabBundle Movement Item` b on a.name = b.parent
 				LEFT JOIN `tabItem` t3 ON b.item_code = t3.name
@@ -89,7 +89,7 @@ def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=
 
 				if sales_order:
 					item['against_sales_order'] = sales_order
-					
+
 		item_list += items
 	return item_list
 
@@ -148,8 +148,9 @@ def on_submit_purchase_receipt(doc,methodName = None):
 		bm.submit()
 
 def on_submit_delivery_note(doc,methodName=None):
-	bundle_items = []
+	
 	for row in doc.product_bundle_inserter:
+		bundle_items = []
 		bm_list = frappe.get_all("Bundle Movement",
 			filters={
 				"product_bundle": row.product_bundle,
@@ -178,37 +179,87 @@ def on_submit_delivery_note(doc,methodName=None):
 		})
 		bm.save(ignore_permissions=True)
 		bm.submit()
+	if doc.against_sales_order:
+		delete_reserved_entries(doc.against_sales_order)
 
-def before_cancel_delivery_note(doc,methodName=None):
-	bm_list = frappe.get_all("Bundle Movement",
-		filters = {
-			"ref_doctype": "Delivery Note",
-			"ref_docname": doc.name,
-			"docstatus": 1
-		}
-	)
-	for bm in bm_list:
-		bm = frappe.get_doc("Bundle Movement", bm.name)
-		bm.docstatus = 2
-		bm.save(ignore_permissions = True)
-		frappe.delete_doc("Bundle Movement", bm.name)
+def before_cancel_delivery_note(doc,methodName=None):	
+	cancel_bundle_movement("Delivery Note",doc.name)
 
 def before_cancel_purchase_receipt(doc,methodName=None):
-	bm_list = frappe.get_all("Bundle Movement",
-		filters = {
-			"ref_doctype": "Purchase Receipt",
-			"ref_docname": doc.name,
-			"docstatus": 1
-		}
-	)
-	for bm in bm_list:
-		bm = frappe.get_doc("Bundle Movement", bm.name)
-		bm.docstatus = 2
-		bm.save(ignore_permissions = True)
-		frappe.delete_doc("Bundle Movement", bm.name)
+	cancel_bundle_movement("Purchase Receipt",doc.name)
 
 def check_if_batch_set(doc,methodName=None):
 	if doc.variant_of and (not doc.has_batch_no):
 		if frappe.db.get_value("Item",doc.variant_of,"has_batch_no"):
 			doc.has_batch_no = 1
 
+def cancel_bundle_movement(ref_doctype,ref_docname):
+	bm_list = frappe.get_all("Bundle Movement",
+		filters = {
+			"ref_doctype": ref_doctype,
+			"ref_docname": ref_docname,
+			"docstatus": 1
+		}
+	)
+	for bm in bm_list:
+		bm = frappe.get_doc("Bundle Movement", bm.name)
+		
+		bm.docstatus = 2
+		bm.save(ignore_permissions = True)
+		frappe.delete_doc("Bundle Movement", bm.name)
+
+
+def on_submit_sales_order(doc,methodName=None):
+	if doc.product_bundle_inserter:
+		for row in doc.product_bundle_inserter:
+			sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) as qty FROM `tabBundle Movement`
+			 where product_bundle='{}' and docstatus in (0,1)
+			 group by product_bundle, bundle_batch,warehouse 	
+			 ORDER BY bundle_batch""".format(row.product_bundle)
+
+			data = frappe.db.sql(sqlq,as_dict=1)
+			req_qty = row.bundle_qty
+			allocated_qty = 0
+			batch_list = []
+			for batch in data:
+				if batch.qty <= (req_qty - allocated_qty):
+					# reserve full row
+					bat_reserve_qty = batch.qty
+
+				elif batch.qty > (req_qty - allocated_qty):
+					#reserve req_qty - allocated_qty
+					bat_reserve_qty = req_qty - allocated_qty
+				
+
+				allocated_qty += bat_reserve_qty
+				if bat_reserve_qty:
+					bm = frappe.get_doc({
+							"doctype":"Bundle Movement",
+							"date" : doc.transaction_date,
+							"product_bundle" : batch.product_bundle,
+							"bundle_batch": batch.bundle_batch,
+							"qty" : bat_reserve_qty*-1,
+							"warehouse": batch.warehouse,
+							"ref_doctype" : "Sales Order",
+						 	"ref_docname" : doc.name			
+						})
+					bm.save(ignore_permissions=True)
+
+
+def on_cancel_sales_order(doc,methodName=None):
+	delete_reserved_entries(doc.name)
+
+def delete_reserved_entries(sales_order):
+	bm_list = frappe.get_all("Bundle Movement",
+		filters = {
+			"ref_doctype": "Sales Order",
+			"ref_docname": sales_order,
+			"docstatus": 0
+		}
+	)
+	for bm in bm_list:
+		bm = frappe.get_doc("Bundle Movement", bm.name)		
+		frappe.delete_doc("Bundle Movement", bm.name)
+
+	#on cancel delivery note
+		#reserve again

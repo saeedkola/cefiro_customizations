@@ -69,8 +69,7 @@
    "fieldname": "bundle_items",
    "fieldtype": "Table",
    "label": "Bundle Items",
-   "options": "Bundle Movement Item",
-   "reqd": 1
+   "options": "Bundle Movement Item"
   },
   {
    "fieldname": "warehouse",
@@ -83,7 +82,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-09-04 10:12:23.817607",
+ "modified": "2021-09-18 04:42:23.381079",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Movement",
