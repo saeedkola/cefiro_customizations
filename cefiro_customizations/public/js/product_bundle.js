@@ -9,7 +9,9 @@ frappe.ui.form.on('Product Bundle', {
         })
     },
     insert_items: button_clicked,
-    create_item: create_item
+    create_item: create_item,
+    validate: calculate_total
+
 });
 
 //Add filter to child item code, maintain_stock:!
@@ -33,10 +35,19 @@ function create_item(frm,cdt,cdn){
             frm.set_value('new_item_code',r.message[2]);
             frm.refresh_fields('new_item_code');           
         }
-    })
+    });
     // console.log(items)
 }
 
+function calculate_total(frm,cdt,cdn){
+    var count = 0;
+    for (var item in frm.doc.items){
+       count = count+frm.doc.items[item].qty;
+    }
+    frm.set_value("total_quantity",count);
+    frm.refresh_fields('total_quantity');
+
+}
 
 function button_clicked(frm,cdt,cdn){
 
@@ -77,6 +88,7 @@ function button_clicked(frm,cdt,cdn){
                             frappe.model.set_value(itemsTable.doctype, itemsTable.name, "qty", 1);
                         }
                         frm.refresh_fields("items");
+                        calculate_total(frm,cdt,cdn);
                     }
                 });                
                 
