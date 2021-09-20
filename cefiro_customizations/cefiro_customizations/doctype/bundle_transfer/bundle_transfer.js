@@ -164,7 +164,7 @@ function get_available_qty(frm,cdt,cdn){
     if (row.bundle_batch){
       args['bundle_batch'] = row.bundle_batch
     }
-    if (row.warehouse){
+    if (row.from_warehouse){
       args['warehouse'] = row.from_warehouse
     }
     frappe.call({
