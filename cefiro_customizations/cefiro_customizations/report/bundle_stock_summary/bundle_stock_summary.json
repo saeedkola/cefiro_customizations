@@ -9,7 +9,7 @@
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-09-06 13:01:07.231981",
+ "modified": "2021-09-22 12:58:19.717920",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Stock Summary",
@@ -24,6 +24,12 @@
   },
   {
    "role": "Administrator"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Stock Manager"
   }
  ]
 }
