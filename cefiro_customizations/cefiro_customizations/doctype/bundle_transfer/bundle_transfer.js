@@ -55,33 +55,38 @@ function on_batch_trigger(frm,cdt,cdn){
         batch: frm.doc.scan_bundle_batch_barcode
       },
       callback: function(r){
-        console.log(r.message);
         var res = r.message;
         if(res.length){
           if (res.length > 1){
-            // res_array = []
-            // for (batch in res){
-            //   res_array.push(res.bundle_batch);
-            // }
-            // new frappe.ui.form.MultiSelectDialog({
-            //   doctype: "Warehouse",
-            //   target: frm,
-            //   setters:{
-            //   },              
-            //   get_query() {
-            //       return {
-            //           filters:{
-            //               name: ["in",res_array]
-            //           }                      
-            //       };
-            //   },
-            //   action(selections) {
-            //       console.log(selections);
-            //       for (const row in selections){
-            //           var itemsTable = frm.add_child("items");                      
-            //       }          
-            //   }
-            // }); 
+            var options ="";
+            for (var key in res){
+              var wh =  res[key].warehouse;
+              options += "\n"+wh;
+            }
+            let d = new frappe.ui.Dialog({
+              title: 'Select Warehouse',
+              fields: [
+                  {
+                      label: 'warehouse',
+                      fieldname: 'warehouse',
+                      fieldtype: 'Select',
+                      options: options
+                  }
+              ],
+              primary_action_label: 'Insert',
+              primary_action(values) {
+                  
+                  for( var key in res){
+                    if(res[key].warehouse == values.warehouse){
+                      add_child_to_pbi(res[key].product_bundle,res[key].bundle_batch,res[key].warehouse,frm.doc.product_bundle_inserter);
+                    }
+                  }                  
+                  frm.set_value("scan_bundle_batch_barcode","");
+                  d.hide();
+                  $("[data-fieldname=scan_bundle_batch_barcode]").focus();
+              }
+            });
+            d.show();
           }else{           
             add_child_to_pbi(res[0].product_bundle,res[0].bundle_batch,res[0].warehouse,frm.doc.product_bundles);
             frm.set_value("scan_bundle_batch_barcode","");

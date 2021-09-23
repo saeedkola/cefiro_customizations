@@ -30,3 +30,19 @@ def before_save_purchase_receipt(doc,methodName=None):
 						"qty": item.qty*bundle.bundle_qty
 						})
 		doc.items = unified_list
+
+for item in frappe.get_all("Item",filters={
+	"has_variants": 1
+	}):
+	item_doc = frappe.get_doc("Item",item.name)
+	#taxes
+	taxes =[{
+		"item_tax_template": "5%",
+		"minimum_net_rate": 1,
+		"maximum_net_rate": 1000
+	},{
+		"item_tax_template": "18%"
+	}]
+	item_doc.taxes = taxes
+	item_doc.save()
+	

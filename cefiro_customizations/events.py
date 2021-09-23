@@ -69,17 +69,17 @@ def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=
 	item_list = []
 	for bundle in json.loads(bundle_list):
 		sqlq = """select b.item_code,b.qty*{bundle_qty}/a.qty qty,b.batch as batch_no, 1 as created_from_bundle,t3.item_name,t3.description,t3.gst_hsn_code,t3.stock_uom as uom,t3.stock_uom, a.warehouse
-				from `tabBundle Movement` a
-				inner join `tabBundle Movement Item` b on a.name = b.parent
-				LEFT JOIN `tabItem` t3 ON b.item_code = t3.name
-				where a.warehouse = '{warehouse}' and 
-				a.product_bundle = '{product_bundle}' 
-				and a.bundle_batch = '{bundle_batch}'
-				and a.docstatus = 1;""".format(
-					bundle_qty=bundle['bundle_qty'], 
-					warehouse=bundle['warehouse'], 
-					bundle_batch=bundle['bundle_batch'],
-					product_bundle = bundle['product_bundle'])
+					from (select name,product_bundle,bundle_batch,qty,warehouse from `tabBundle Movement` 
+						where product_bundle = '{product_bundle}' and bundle_batch='{bundle_batch}' and docstatus=1 and qty>0
+						order by creation limit 1
+					) a
+					inner join `tabBundle Movement Item` b on a.name = b.parent
+					LEFT JOIN `tabItem` t3 ON b.item_code = t3.name 
+					""".format(
+						bundle_qty=bundle['bundle_qty'], 
+						bundle_batch=bundle['bundle_batch'],
+						product_bundle = bundle['product_bundle'])
+
 
 		items = frappe.db.sql(sqlq, as_dict=1)
 		if bundle['rate'] or sales_order:
