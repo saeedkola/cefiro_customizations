@@ -27,8 +27,11 @@ def create_bundle_name(items):
 		ic_list.append(item['item_code'])
 		ic_qty[item['item_code']] = item['qty']
 
-
-	t = tuple(ic_list)
+	if len(ic_list) > 1:
+		t = tuple(ic_list)
+	else:
+		t = "('{}')".format(ic_list[0])
+	
 
 	sqlq ="""Select t1.parent,colour,size, variant_of from (
 			SELECT parent,attribute_value AS colour, variant_of FROM `tabItem Variant Attribute`
