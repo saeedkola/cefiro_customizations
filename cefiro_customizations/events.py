@@ -212,8 +212,10 @@ def cancel_bundle_movement(ref_doctype,ref_docname):
 def on_submit_sales_order(doc,methodName=None):
 	if doc.product_bundle_inserter:
 		for row in doc.product_bundle_inserter:
-			sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) as qty FROM `tabBundle Movement`
-			 where product_bundle='{}' and docstatus in (0,1)
+			sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) as qty FROM `tabBundle Movement` t1
+			 left join `tabWarehouse` t2 on t1.warehouse = t2.name
+			 where ifnull(t2.warehouse_type,"") != "Retention" and
+			 product_bundle='{}' and docstatus in (0,1)
 			 group by product_bundle, bundle_batch,warehouse 	
 			 ORDER BY bundle_batch""".format(row.product_bundle)
 
