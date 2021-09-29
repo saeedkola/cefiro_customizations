@@ -20,7 +20,7 @@ frappe.ui.form.on('Delivery Note',{
         }
         
       }else{
-        console.log("FAlse");
+        console.log("False");
       }
     },
     set_warehouse: function(frm,cdt,cdn){

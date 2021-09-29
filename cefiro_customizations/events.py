@@ -90,6 +90,9 @@ def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=
 				if sales_order:
 					item['against_sales_order'] = sales_order
 
+				if bundle['warehouse']:
+					item["warehouse"] = bundle['warehouse']
+
 		item_list += items
 	return item_list
 
@@ -193,7 +196,7 @@ def check_if_batch_set(doc,methodName=None):
 		if frappe.db.get_value("Item",doc.variant_of,"has_batch_no"):
 			doc.has_batch_no = 1
 	if doc.variant_of and (not doc.gst_hsn_code):
-		parent_hsn_code = frappe.db.get_value("Item",doc.variant_of,"gst_hsn_code"):
+		parent_hsn_code = frappe.db.get_value("Item",doc.variant_of,"gst_hsn_code")
 		if parent_hsn_code:
 			doc.gst_hsn_code = parent_hsn_code
 
@@ -269,3 +272,20 @@ def delete_reserved_entries(sales_order):
 
 	#on cancel delivery note
 		#reserve again
+
+def update_taxes_on_items(settings):
+	item_list = frappe.db.sql("select name from tabItem where has_variants=1",as_dict=1)
+	for item in item_list:
+		frappe.logger().debug(item['name'])
+		doc = frappe.get_doc("Item",item['name'])
+		taxes_a = []
+		for tax in settings.taxes:
+			taxes_a.append({
+				"item_tax_template" : tax.item_tax_template,
+				"tax_category"		: tax.tax_category,
+				"valid_from"		: tax.valid_from,
+				"minimum_net_rate"	: tax.minimum_net_rate,
+				"maximum_net_rate"	: tax.maximum_net_rate
+				})
+		doc.taxes = taxes_a
+		doc.save(ignore_permissions=True)
