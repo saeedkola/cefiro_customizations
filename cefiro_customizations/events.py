@@ -279,13 +279,16 @@ def update_taxes_on_items(settings):
 		frappe.logger().debug(item['name'])
 		doc = frappe.get_doc("Item",item['name'])
 		taxes_a = []
+		doc.set("taxes",[])
 		for tax in settings.taxes:
-			taxes_a.append({
+			doc.append('taxes',{
 				"item_tax_template" : tax.item_tax_template,
 				"tax_category"		: tax.tax_category,
 				"valid_from"		: tax.valid_from,
 				"minimum_net_rate"	: tax.minimum_net_rate,
-				"maximum_net_rate"	: tax.maximum_net_rate
+				"maximum_net_rate"	: tax.maximum_net_rate,
+				"modified"			: tax.modified
 				})
-		doc.taxes = taxes_a
-		doc.save(ignore_permissions=True)
+
+
+		doc.save(ignore_version=True)
