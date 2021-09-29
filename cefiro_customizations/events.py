@@ -192,6 +192,10 @@ def check_if_batch_set(doc,methodName=None):
 	if doc.variant_of and (not doc.has_batch_no):
 		if frappe.db.get_value("Item",doc.variant_of,"has_batch_no"):
 			doc.has_batch_no = 1
+	if doc.variant_of and (not doc.gst_hsn_code):
+		parent_hsn_code = frappe.db.get_value("Item",doc.variant_of,"gst_hsn_code"):
+		if parent_hsn_code:
+			doc.gst_hsn_code = parent_hsn_code
 
 def cancel_bundle_movement(ref_doctype,ref_docname):
 	bm_list = frappe.get_all("Bundle Movement",
@@ -215,7 +219,7 @@ def on_submit_sales_order(doc,methodName=None):
 			sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) as qty FROM `tabBundle Movement` t1
 			 left join `tabWarehouse` t2 on t1.warehouse = t2.name
 			 where ifnull(t2.warehouse_type,"") != "Retention" and
-			 product_bundle='{}' and docstatus in (0,1)
+			 product_bundle='{}' and t1.docstatus in (0,1)
 			 group by product_bundle, bundle_batch,warehouse 	
 			 ORDER BY bundle_batch""".format(row.product_bundle)
 

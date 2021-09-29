@@ -121,9 +121,14 @@ doc_events ={
 	}
 }
 
+jenv = {
+    "methods": [
+        "get_hsn:cefiro_customizations.filters.get_hsn_from_bundle"
+    ]
+}
+
 # Scheduled Tasks
 # ---------------
-
 # scheduler_events = {
 # 	"all": [
 # 		"cefiro_customizations.tasks.all"

@@ -124,3 +124,25 @@ def get_details_from_bundle_batch(batch):
 	
 
 
+@frappe.whitelist()
+def get_hsn_from_bundle(bundle):
+	gst_a = frappe.db.sql("""SELECT t2.gst_hsn_code FROM `tabProduct Bundle Item` t1 
+		left join `tabItem` t2 on t2.name=t1.item_code
+		where t1.parent="{}" limit 1""".format(bundle),as_dict=1)
+	if gst_a[0]['gst_hsn_code']:
+		return gst_a[0]['gst_hsn_code']
+	else:
+		return False
+
+
+def fix_all_hsn_codes():
+	item_list = frappe.db.sql("select name,variant_of from `tabItem` where variant_of is not null and gst_hsn_code is null",as_dict=1);
+	for item in item_list:
+		parent_hsn = frappe.db.get_value("Item",item['variant_of'],"gst_hsn_code")
+		if parent_hsn:
+			doc = frappe.get_doc("Item",item['name'])
+			doc.gst_hsn_code = parent_hsn
+			doc.save()
+
+	frappe.db.commit()
+
