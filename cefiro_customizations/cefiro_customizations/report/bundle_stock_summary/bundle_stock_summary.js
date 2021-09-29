@@ -15,6 +15,12 @@ frappe.query_reports["Bundle Stock Summary"] = {
 			"label"		: "Group by warehouse",
 			"fieldtype"	: "Check",		
 			"default"	: 1
+		},
+		{
+			"fieldname"	: "show_reserved",
+			"label"		: "Show Reserved Bundles in Stock",
+			"fieldtype"	: "Check",		
+			"default"	: 1
 		}
 	]
 };

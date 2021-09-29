@@ -132,7 +132,14 @@ def get_hsn_from_bundle(bundle):
 	if gst_a[0]['gst_hsn_code']:
 		return gst_a[0]['gst_hsn_code']
 	else:
-		return False
+		return ""
+
+@frappe.whitelist()
+def get_tax_rate_from_price(price):
+	if price > 1000:
+		return "18%"
+	else:
+		return "5%"
 
 
 def fix_all_hsn_codes():
