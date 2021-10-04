@@ -65,33 +65,36 @@ def get_item_details_from_bundle_inserter(bundle_list,set_warehouse=None,deliver
 	return item_details
 
 @frappe.whitelist()
-def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=None):
+def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=""):
 	item_list = []
+	
+
 	for bundle in json.loads(bundle_list):
-		sqlq = """select b.item_code,b.qty*{bundle_qty}/a.qty qty,b.batch as batch_no, 1 as created_from_bundle,t3.item_name,t3.description,t3.gst_hsn_code,t3.stock_uom as uom,t3.stock_uom, a.warehouse
-					from (select name,product_bundle,bundle_batch,qty,warehouse from `tabBundle Movement` 
-						where product_bundle = '{product_bundle}' and bundle_batch='{bundle_batch}' and docstatus=1 and qty>0
-						order by creation limit 1
-					) a
-					inner join `tabBundle Movement Item` b on a.name = b.parent
-					LEFT JOIN `tabItem` t3 ON b.item_code = t3.name 
+		if bundle['rate']:
+			rate = bundle['rate']
+		else:
+			rate = 0
+		sqlq = """select b.item_code,b.qty*{bundle_qty}/a.qty qty,b.batch as batch_no, 
+				1 as created_from_bundle,t3.item_name,t3.description,
+				t3.gst_hsn_code,t3.stock_uom as uom,t3.stock_uom, a.warehouse,
+				'{sales_order}' as against_sales_order, {rate} as rate
+				from (
+					select name,product_bundle,bundle_batch,qty,warehouse from `tabBundle Movement` 
+					where product_bundle = '{product_bundle}' and bundle_batch='{bundle_batch}' and warehouse="{warehouse}" and docstatus=1 and qty>0
+					order by creation limit 1
+				) a
+				inner join `tabBundle Movement Item` b on a.name = b.parent
+				LEFT JOIN `tabItem` t3 ON b.item_code = t3.name
 					""".format(
 						bundle_qty=bundle['bundle_qty'], 
 						bundle_batch=bundle['bundle_batch'],
-						product_bundle = bundle['product_bundle'])
+						product_bundle = bundle['product_bundle'],
+						sales_order=sales_order,
+						warehouse = bundle['warehouse'],
+						rate=rate)
 
 
 		items = frappe.db.sql(sqlq, as_dict=1)
-		if bundle['rate'] or sales_order:
-			for item in items:
-				if bundle['rate']:
-					item['rate'] = bundle['rate']
-
-				if sales_order:
-					item['against_sales_order'] = sales_order
-
-				if bundle['warehouse']:
-					item["warehouse"] = bundle['warehouse']
 
 		item_list += items
 	return item_list

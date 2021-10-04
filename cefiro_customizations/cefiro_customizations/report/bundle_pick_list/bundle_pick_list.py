@@ -15,8 +15,12 @@ def execute(filters=None):
 	# else:
 	# 	pb_tuple = "('{}')".format(pb_list[0])
 
-	sqlq = """SELECT product_bundle,bundle_batch,warehouse,ABS(qty) FROM `tabBundle Movement`
-	 where ref_doctype = 'Sales Order' and ref_docname='{sales_order}'""".format(sales_order=filters.sales_order)
+	sqlq = """select t1.product_bundle,t2.bundle_batch,t2.warehouse,t2.qty from `tabProduct Bundle Inserter SO` t1 
+				left join(
+				SELECT product_bundle,bundle_batch,warehouse,ABS(qty) as qty FROM `tabBundle Movement`
+				where ref_doctype = 'Sales Order' and ref_docname='{sales_order}'
+				) t2 ON t2.product_bundle=t1.product_bundle
+				where parent='{sales_order}'""".format(sales_order=filters.sales_order)
 	
 	data = frappe.db.sql(sqlq)
 

@@ -34,11 +34,15 @@ frappe.ui.form.on('Delivery Note',{
 });
 
 function on_batch_trigger(frm,cdt,cdn){
+  if(!frm.doc.against_sales_order && !frm.doc.override_sales_order_mandate){
+    frappe.throw("Sales Order Not Set");
+  }
   if(frm.doc.scan_bundle_batch_barcode){
     frappe.call({
       method: "cefiro_customizations.filters.get_details_from_bundle_batch",
       args:{
-        batch: frm.doc.scan_bundle_batch_barcode
+        batch: frm.doc.scan_bundle_batch_barcode,
+        sales_order: frm.doc.against_sales_order
       },
       callback: function(r){      
         var res = r.message;
@@ -64,7 +68,7 @@ function on_batch_trigger(frm,cdt,cdn){
                   
                   for( var key in res){
                     if(res[key].warehouse == values.warehouse){
-                      add_child_to_pbi(res[key].product_bundle,res[key].bundle_batch,res[key].warehouse,frm.doc.product_bundle_inserter);
+                      add_child_to_pbi(res[key].product_bundle,res[key].bundle_batch,res[key].warehouse,frm.doc.product_bundle_inserter,res[key].rate);
                     }
                   }                  
                   frm.set_value("scan_bundle_batch_barcode","");
@@ -75,7 +79,7 @@ function on_batch_trigger(frm,cdt,cdn){
             d.show();
         
           }else{           
-            add_child_to_pbi(res[0].product_bundle,res[0].bundle_batch,res[0].warehouse,frm.doc.product_bundle_inserter);
+            add_child_to_pbi(res[0].product_bundle,res[0].bundle_batch,res[0].warehouse,frm.doc.product_bundle_inserter,res[0].rate);
             frm.set_value("scan_bundle_batch_barcode","");
             $("[data-fieldname=scan_bundle_batch_barcode]").focus();
 
@@ -86,16 +90,24 @@ function on_batch_trigger(frm,cdt,cdn){
   }
 }
 
-function add_child_to_pbi(product_bundle,batch,warehouse,pbi){
+function add_child_to_pbi(product_bundle,batch,warehouse,pbi,rate){
+  if(!rate){
+    if(cur_frm.doc.sales_order){
+      frappe.throw("Bundle not in sales order");
+    }else{
+      rate = 0;
+    }
+  }
   var check = check_if_exists_in_pbi(batch,warehouse,pbi);
-  console.log(check);
   if(!check){
     var bundle = cur_frm.add_child("product_bundle_inserter");
     bundle.product_bundle = product_bundle;
     bundle.bundle_batch = batch;
     bundle.warehouse = warehouse;
-    cur_frm.refresh_field("product_bundle_inserter");
-  } 
+    bundle.rate=rate;
+    cur_frm.refresh_field("product_bundle_inserter"); 
+  }
+  
   
 }
 
@@ -123,7 +135,7 @@ function validate_pbi(frm,cdt,cdn){
   $.each(frm.doc.product_bundle_inserter,function(key,row){
     if(!row.product_bundle || !row.bundle_batch || !row.warehouse){
       let row_no = row.idx;
-      let message = `Mandatory fields not set in row {row_no}`;
+      let message = `Mandatory fields not set in row ${row_no}`;
       frappe.throw(__(message));
       return false;
 
@@ -161,6 +173,7 @@ frappe.ui.form.on('Product Bundle Inserter', {
 		row.warehouse = frm.doc.set_warehouse;
 		frm.refresh_field("product_bundle_inserter");
     get_available_qty(frm,cdt,cdn);
+    get_price_from_sales_order(frm,cdt,cdn);
 	},
   warehouse: get_available_qty,
   bundle_batch: get_available_qty,
@@ -201,4 +214,34 @@ function get_available_qty(frm,cdt,cdn){
       }
     })
   }
+}
+
+function get_price_from_sales_order(frm,cdt,cdn){
+  var row = locals[cdt][cdn];
+  if (row.product_bundle){
+    if(!frm.doc.against_sales_order){
+      if(!frm.doc.override_sales_order_mandate){
+        frappe.throw("Sales Order Not Set");
+      }
+    }else{
+      var args = {
+        product_bundle: row.product_bundle,
+        sales_order: frm.doc.against_sales_order
+      }
+      frappe.call({
+        method: "cefiro_customizations.filters.get_bundle_rate",
+        args : args,
+        callback: function(r){
+          console.log(r.message);
+          var rate = r.message[0].rate;
+          if (rate !== null){
+            row.rate = rate;
+          }else{
+            row.rate = 0;
+          }
+          frm.refresh_field("product_bundle_inserter");
+        }
+      })
+    }    
+  } 
 }

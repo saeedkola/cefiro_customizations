@@ -107,6 +107,8 @@ def get_bundle_quantity(product_bundle,bundle_batch=None,warehouse=None):
 		sqlq += """ and bundle_batch='{bundle_batch}'""".format(bundle_batch=bundle_batch)
 	if warehouse:
 		sqlq += """ and warehouse='{warehouse}'""".format(warehouse=warehouse)
+	else:
+		sqlq += """ and warehouse!='BM-ST - LII'"""
 
 	sqlq += ";"
 
@@ -115,11 +117,26 @@ def get_bundle_quantity(product_bundle,bundle_batch=None,warehouse=None):
 	return qty
 
 @frappe.whitelist()
-def get_details_from_bundle_batch(batch):
-	sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) qty 
+def get_details_from_bundle_batch(batch,sales_order=None):
+	if sales_order:
+		sqlq = """select t1.*,t2.rate from (
+				SELECT product_bundle,bundle_batch,warehouse,sum(qty) qty 
+				FROM `tabBundle Movement` 
+				where bundle_batch="{batch}"
+				group by warehouse
+				) t1
+				left join 
+				(
+				select product_bundle,rate from `tabProduct Bundle Inserter SO`
+				where parent="{sales_order}"
+				) t2
+				on t1.product_bundle=t2.product_bundle""".format(batch=batch,sales_order=sales_order)
+	else:
+		sqlq = """SELECT product_bundle,bundle_batch,warehouse,sum(qty) qty 
 			FROM `tabBundle Movement` 
 			where bundle_batch="{batch}"
 			group by warehouse;""".format(batch=batch)
+
 	return frappe.db.sql(sqlq,as_dict=1)
 	
 
@@ -141,6 +158,13 @@ def get_tax_rate_from_price(price):
 	else:
 		return "5%"
 
+@frappe.whitelist()
+def get_bundle_rate(product_bundle,sales_order):
+	sqlq = """select product_bundle,rate from `tabProduct Bundle Inserter SO`
+				where parent='{sales_order}' and product_bundle='{product_bundle}'""".format(sales_order=sales_order,product_bundle=product_bundle)
+	return frappe.db.sql(sqlq,as_dict=1)
+
+
 
 def fix_all_hsn_codes():
 	item_list = frappe.db.sql("select name,variant_of from `tabItem` where variant_of is not null and gst_hsn_code is null",as_dict=1);
@@ -150,6 +174,5 @@ def fix_all_hsn_codes():
 			doc = frappe.get_doc("Item",item['name'])
 			doc.gst_hsn_code = parent_hsn
 			doc.save()
-
-	frappe.db.commit()
+			frappe.db.commit()
 
