@@ -102,7 +102,7 @@ def create_bundle_name(items):
 @frappe.whitelist()
 def get_bundle_quantity(product_bundle,bundle_batch=None,warehouse=None):
 	sqlq ="""SELECT sum(qty) as qty FROM `tabBundle Movement` 
-		WHERE product_bundle='{product_bundle}' and docstatus=1""".format(product_bundle=product_bundle)
+		WHERE product_bundle='{product_bundle}'""".format(product_bundle=product_bundle)
 	if bundle_batch:
 		sqlq += """ and bundle_batch='{bundle_batch}'""".format(bundle_batch=bundle_batch)
 	if warehouse:
