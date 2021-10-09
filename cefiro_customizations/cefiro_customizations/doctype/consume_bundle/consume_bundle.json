@@ -6,11 +6,16 @@
  "engine": "InnoDB",
  "field_order": [
   "posting_date",
+  "section_break_2",
+  "scan_bundle_batch_barcode",
   "product_bundles",
+  "section_break_5",
+  "consumed_items",
   "amended_from"
  ],
  "fields": [
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -32,12 +37,31 @@
    "options": "Consume Bundle",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scan_bundle_batch_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Bundle Batch Barcode"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "consumed_items",
+   "fieldtype": "Table",
+   "label": "Consumed Items",
+   "options": "Consumed Items"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-08-29 20:03:51.952290",
+ "modified": "2021-10-09 10:37:04.209289",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Consume Bundle",

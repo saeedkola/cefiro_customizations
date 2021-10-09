@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "creation": "2021-09-22 23:15:52.525009",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "excel_column",
+  "import_column"
+ ],
+ "fields": [
+  {
+   "fieldname": "excel_column",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Excel Column",
+   "reqd": 1
+  },
+  {
+   "fieldname": "import_column",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Import Column",
+   "options": "\nParent Item\nColour Attribute\nSize Attribute\nWarehouse\nPrice"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-09-23 00:04:09.137762",
+ "modified_by": "Administrator",
+ "module": "Cefiro Customizations",
+ "name": "PR Import Map",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

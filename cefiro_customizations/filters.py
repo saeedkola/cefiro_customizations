@@ -18,6 +18,20 @@ def get_variant_items(item_template,colour="",size=""):
 	for row in response:
 		ret.append(row[0])
 	return ret
+	
+@frappe.whitelist()
+def get_unallocated_items_batch_no(warehouse):
+	sqlq = """select batch_no from (
+		select batch_no,sum(quantity) as quantity,warehouse from `tabUnallocated items`
+		where warehouse = '{warehouse}'
+		group by batch_no,warehouse
+		) t1 where t1.quantity>0""".format(warehouse=warehouse)
+
+	response = frappe.db.sql(sqlq,as_list=1)
+	ret = []
+	for row in response:
+		ret.append(row[0])
+	return ret
 
 @frappe.whitelist()
 def create_bundle_name(items):
@@ -175,4 +189,18 @@ def fix_all_hsn_codes():
 			doc.gst_hsn_code = parent_hsn
 			doc.save()
 			frappe.db.commit()
+
+@frappe.whitelist()
+def get_unallocated_items_batch_no(warehouse):
+	sqlq = """select batch_no from (
+		select batch_no,sum(quantity) as quantity,warehouse from `tabUnallocated items`
+		where warehouse = '{warehouse}'
+		group by batch_no,warehouse
+		) t1 where t1.quantity>0""".format(warehouse=warehouse)
+
+	response = frappe.db.sql(sqlq,as_list=1)
+	ret = []
+	for row in response:
+		ret.append(row[0])
+	return ret
 

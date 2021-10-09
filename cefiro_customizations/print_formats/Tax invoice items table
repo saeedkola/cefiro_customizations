@@ -1,0 +1,67 @@
+<table class="table table-bordered items-table">
+	<tr>
+		<th>SI</th>  <!-- 1 -->
+		<th>Description</th> <!-- 2 -->
+		<th>HSN</th>
+		<th>Qty</th>
+		<th>Unit Price</th>
+		<th>Per</th>
+		<th>Amount</th>
+		<th>GST %</th>
+	</tr>
+	{% set count=0%}
+	{% for item in doc.product_bundle_inserter %}
+	<tr>
+		<td>{{loop.index}}</td>
+		<td>{{item.product_bundle}}</td>
+		<td>{% if item.gst_hsn_code%}
+				{{item.gst_hsn_code}}
+
+			{% else %}
+				{{get_hsn(item.product_bundle)}}
+
+			{% endif %}</td>
+		<td>{% set qty = item.bundle_qty*item.item_qty%} {{qty}}</td>
+		<td>{{item.get_formatted("rate")}}</td>
+		<td>Pair</td>
+		<td>{% set amount = item.bundle_qty*item.item_qty*item.rate %}
+		{{frappe.format(amount,{'fieldtype': 'Currency'})}}</td>
+		<td>{% if item.gst_rate%}
+				{{item.gst_rate}}
+			{% else %}
+				{% if item.rate > 1000 %}
+					18%
+				{% else %}
+					5%
+				{% endif%}
+			{% endif %}</td>
+	</tr>
+	{% set count = loop.index %}
+	{% endfor %}
+	{% for item in doc.items %}
+	{% if not item.created_from_bundle %}
+	{% set count_item = count + loop.index  %}
+	<tr>
+		<td>{{count_item}}</td>
+		<td>{{item.description}}</td>
+		<td>{% if item.gst_hsn_code %}{{item.gst_hsn_code}}{% endif %}</td>
+		<td>{{ item.qty }}</td>
+		<td>{{item.get_formatted('rate')}}</td>
+		<td>{{item.uom}}</td>
+		<td>{{item.get_formatted('amount')}}</td>
+		<td>{% if item.item_tax_template %}{{item.item_tax_template}}{% endif %}</td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+	<tr>
+		
+		<th colspan="3"><strong>Totals</strong></th>
+		<th>{{doc.get_formatted('total_qty')}}</th>
+		<th></th>
+		<th></th>
+		<th>{{frappe.format(doc.total,{'fieldtype': 'Currency'})}}</th>
+		<th></th>
+	</tr>
+
+
+</table>

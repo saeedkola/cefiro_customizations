@@ -66,8 +66,7 @@ def get_item_details_from_bundle_inserter(bundle_list,set_warehouse=None,deliver
 
 @frappe.whitelist()
 def get_item_details_from_bundle_inserter_delivery_note(bundle_list,sales_order=""):
-	item_list = []
-	
+	item_list = []	
 
 	for bundle in json.loads(bundle_list):
 		if bundle['rate']:
@@ -194,6 +193,10 @@ def before_cancel_delivery_note(doc,methodName=None):
 def before_cancel_purchase_receipt(doc,methodName=None):
 	cancel_bundle_movement("Purchase Receipt",doc.name)
 
+def before_cancel_consume_bundle(doc,methodName=None):
+	cancel_bundle_movement("Consume Bundle",doc.name)
+	cancel_unalloc_items("Consume Bundle",doc.name)	
+
 def check_if_batch_set(doc,methodName=None):
 	if doc.variant_of and (not doc.has_batch_no):
 		if frappe.db.get_value("Item",doc.variant_of,"has_batch_no"):
@@ -217,6 +220,21 @@ def cancel_bundle_movement(ref_doctype,ref_docname):
 		bm.docstatus = 2
 		bm.save(ignore_permissions = True)
 		frappe.delete_doc("Bundle Movement", bm.name)
+
+def cancel_unalloc_items(ref_doctype,ref_docname):
+	unalloc_list = frappe.get_all("Unallocated items",
+		filters = {
+			"ref_doctype": ref_doctype,
+			"ref_docname": ref_docname,
+			"docstatus": 1
+		}
+	)
+	for doc in unalloc_list:
+		ua = frappe.get_doc("Unallocated items", doc.name)
+		
+		ua.docstatus = 2
+		ua.save(ignore_permissions = True)
+		frappe.delete_doc("Unallocated items", doc.name)
 
 
 def on_submit_sales_order(doc,methodName=None):

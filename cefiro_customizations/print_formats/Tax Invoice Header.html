@@ -1,0 +1,97 @@
+<div class="print-heading text-center">
+	<h2>
+		TAX INVOICE
+	</h2>
+	<h2>{{doc.company}}</h2>
+	<p style="text-align: center;">Shop No. 719/20, Gali Saudagran, Ballimaran, Chandni Chowk, Delhi - 110006</p>
+</div>
+<h2 class="text-center invoice-copy">
+	{% if doc.invoice_copy -%}
+		<small>{{ doc.invoice_copy }}</small>
+	{% endif -%}
+</h2>
+
+<table class="table table-bordered table-condensed header-table">
+	<tr>
+		<td style="width: 50%;">
+			<table class="table table-borderless">
+				<tr>
+					<td>GSTIN / UIN:</td>
+					<td>07AACCL4896N1ZS</td>
+				</tr>
+				<tr>
+					<td>State Name</td>
+					<td>Delhi [07]</td>
+				</tr>
+				<tr>
+					<td>Email</td>
+					<td>lovely@dobulk.com</td>
+				</tr>
+			</table>
+		</td>
+		<td style="width:50%">
+			<table class="table table-borderless">
+				<tr>
+					<td>Invoice No.</td>
+					<td>{{doc.name}}</td>
+				</tr>
+				<tr>
+					<td>Invoice Date</td>
+					<td>{{doc.get_formatted('posting_date')}}</td>
+				</tr>
+				<tr>
+					<td>PO No. & Date</td>
+					<td>{%if doc.po_no%}{{doc.po_no}}{%endif%} {% if doc.po_date %}[{{doc.get_formatted('po_date')}}]{% endif %}</td>
+				</tr>
+				<tr>
+					<td>Sales Order</td>
+					<td>{% if doc.items.0.sales_order %}{{doc.items.0.sales_order}}{% endif %}</td>
+				</tr>
+				<tr>
+					<td>Delivery Note</td>
+					<td>{% if doc.items.0.delivery_note %}{{doc.items.0.delivery_note}}{% endif %}</td>
+				</tr>
+				{% if (doc.transporter_name or doc.vehicle_no) %}
+				<tr>
+					<td>
+						Transporter:<br>
+						{% if doc.transporter_name%}
+							{{doc.transporter_name}}
+						{% endif %}
+						<br>
+						{% if doc.gst_transporter_id%}
+							{{doc.gst_transporter_id}}
+						{% endif %}
+					</td>
+					<td>
+						Vehicle No:<br>
+						{% if doc.vehicle_no %}
+							{{doc.vehicle_no}}
+						{% endif %}
+					</td>
+				</tr>
+				{% endif %}				
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<th>Billed To:</th>
+		<th>Shipped To:</th>
+	</tr>
+	<tr>
+		<td>
+			{%if doc.address_display%}
+			{{doc.address_display}}
+			{% else %}
+			<strong>{{doc.customer}}</strong>
+		{%endif%}</td>
+		<td>{% if doc.shipping_address %}
+				{{ doc.shipping_address }}
+					{% else %}
+				{%if doc.address_display%}
+					{{doc.address_display}}
+				{% else %}
+				{% endif %}
+			{% endif %}</td>
+	</tr>
+</table>

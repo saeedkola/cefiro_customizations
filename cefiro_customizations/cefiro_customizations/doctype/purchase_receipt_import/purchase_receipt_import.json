@@ -1,0 +1,74 @@
+{
+ "actions": [],
+ "autoname": "PRI.#####",
+ "creation": "2021-09-22 23:16:43.691324",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "excel_file",
+  "section_break_3",
+  "get_column_names",
+  "column_map",
+  "data_6"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "excel_file",
+   "fieldtype": "Attach",
+   "label": "Excel File"
+  },
+  {
+   "fieldname": "column_map",
+   "fieldtype": "Table",
+   "label": "Column Map",
+   "options": "PR Import Map"
+  },
+  {
+   "fieldname": "get_column_names",
+   "fieldtype": "Button",
+   "label": "Get Column Names"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "data_6",
+   "fieldtype": "Data"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2021-09-22 23:48:01.880290",
+ "modified_by": "Administrator",
+ "module": "Cefiro Customizations",
+ "name": "Purchase Receipt Import",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -1,0 +1,12 @@
+<label></label>
+<table class="table table-bordered auth-sign" style="width:100%">
+	<tr>
+		<th>For {{doc.company}}</th>
+	</tr>
+	<tr>
+		<td>
+			<br><br><br><br>
+			Authorised Signatory
+		</td>
+	</tr>
+</table>

@@ -85,7 +85,8 @@ class BundleTransfer(Document):
 			se = frappe.get_doc({
 				"doctype"	: "Stock Entry",
 				"stock_entry_type"	: "Material Transfer",
-				"items"	: stock_entry_items
+				"items"	: stock_entry_items,
+				"is_bundle_movement": 1
 				})
 			se.save(ignore_permissions=True)
 			se.submit()

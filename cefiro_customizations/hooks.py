@@ -118,6 +118,9 @@ doc_events ={
 	"Sales Order":{
 		"on_submit": "cefiro_customizations.events.on_submit_sales_order",
 		"before_cancel": "cefiro_customizations.events.on_cancel_sales_order"
+	},
+	"Consume Bundle":{
+		"before_cancel": "cefiro_customizations.events.before_cancel_consume_bundle"
 	}
 }
 
