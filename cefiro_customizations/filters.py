@@ -92,16 +92,16 @@ def create_bundle_name(items):
 			parent_ic = parent_ic[:-1]+") "
 	parent_ic+= "Pack of {}".format(pack_qty)
 
-	if len(parent_ic) < 140:
-		item = frappe.get_doc({
-			"doctype": "Item",
-			"item_code": parent_ic,
-			"item_name": parent_ic,
-			"item_group": "All Item Groups",
-			"stock_uom": "Box",
-			"is_stock_item": 0
-			})
-		item.insert(ignore_permissions=True)
+	# if len(parent_ic) < 140:
+	item = frappe.get_doc({
+		"doctype": "Item",
+		"item_code": parent_ic,
+		"item_name": parent_ic,
+		"item_group": "All Item Groups",
+		"stock_uom": "Box",
+		"is_stock_item": 0
+		})
+	item.insert(ignore_permissions=True)
 
 
 	return [parent_ic,len(parent_ic),item.item_code]
@@ -203,4 +203,14 @@ def get_unallocated_items_batch_no(warehouse):
 	for row in response:
 		ret.append(row[0])
 	return ret
+
+@frappe.whitelist()
+def get_items_by_batch(batch_list,warehouse):
+	batch_list = json.loads(batch_list)
+	if len(batch_list) > 1:
+		b = tuple(batch_list)
+	else:
+		b = "('{}')".format(batch_list[0])
+	sqlq = """select name,item,'{warehouse}' as warehouse from `tabBatch` where name in {batch_list}""".format(warehouse=warehouse,batch_list=b)
+	return frappe.db.sql(sqlq,as_dict=1)
 

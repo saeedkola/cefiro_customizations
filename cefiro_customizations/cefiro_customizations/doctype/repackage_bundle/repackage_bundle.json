@@ -1,0 +1,90 @@
+{
+ "actions": [],
+ "autoname": "RP-.#####",
+ "creation": "2021-10-09 12:28:59.162044",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "warehouse",
+  "get_items",
+  "items",
+  "pb_hash",
+  "pb_dict",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Repackage Bundle",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "get_items",
+   "fieldtype": "Button",
+   "label": "Get loose Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Consumed Items",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pb_hash",
+   "fieldtype": "Data",
+   "label": "Hash"
+  },
+  {
+   "fieldname": "pb_dict",
+   "fieldtype": "Long Text",
+   "label": "Dict"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2021-10-12 08:02:00.612374",
+ "modified_by": "Administrator",
+ "module": "Cefiro Customizations",
+ "name": "Repackage Bundle",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1,
+ "track_seen": 1
+}

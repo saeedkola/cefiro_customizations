@@ -39,7 +39,8 @@ doctype_js = {
 	"Purchase Receipt" 	: "public/js/purchase_receipt.js",
 	"Product Bundle"	: "public/js/product_bundle.js",
 	"Delivery Note"		: "public/js/delivery_note.js",
-	"Sales Order"		: "public/js/sales_order.js"
+	"Sales Order"		: "public/js/sales_order.js",
+	"Stock Entry"		: "public/js/stock_entry.js"
 	}
 
 # Home Pages
@@ -121,6 +122,17 @@ doc_events ={
 	},
 	"Consume Bundle":{
 		"before_cancel": "cefiro_customizations.events.before_cancel_consume_bundle"
+	},
+	"Repackage Bundle":{
+		"before_cancel": "cefiro_customizations.events.before_cancel_repackage_bundle"
+	},
+	"Product Bundle":{
+		"validate": "cefiro_customizations.events.validate_product_bundle"
+	},
+	"Stock Entry":{
+		"before_submit": "cefiro_customizations.events.before_submit_stock_entry",
+		"before_cancel": "cefiro_customizations.events.before_cancel_stock_entry",
+		"validate": "cefiro_customizations.events.validate_stock_entry"
 	}
 }
 

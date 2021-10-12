@@ -13,6 +13,8 @@
  ],
  "fields": [
   {
+   "fetch_from": "batch.item",
+   "fetch_if_empty": 1,
    "fieldname": "item",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -52,7 +54,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-10-07 11:10:08.554509",
+ "modified": "2021-10-10 12:32:28.526855",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Consumed Items",
