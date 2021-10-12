@@ -187,6 +187,8 @@ def on_submit_delivery_note(doc,methodName=None):
 	if doc.against_sales_order:
 		delete_reserved_entries(doc.against_sales_order)
 
+
+
 def before_cancel_delivery_note(doc,methodName=None):	
 	cancel_bundle_movement("Delivery Note",doc.name)
 
@@ -328,46 +330,48 @@ def validate_product_bundle(doc,methodName=None):
 	doc.hash = hash(pb_dict)
 
 def before_submit_stock_entry(doc,methodName=None):
-	if (doc.stock_entry_type == "Material Transfer") and (not doc.is_bundle_movement):
-		for item in doc.items:
-			uap = frappe.get_doc({
-				"doctype": "Unallocated items",
-				"item": item.item_code,
-				"batch": item.batch_no,
-				"qty": item.qty,
-				"warehouse": item.t_warehouse,
-				"ref_doctype": "Stock Entry" ,
-				"ref_docname": doc.name
-				})
+	if (doc.stock_entry_type == "Material Transfer"):
+		if not doc.is_bundle_movement:
+			for item in doc.items:
+				uap = frappe.get_doc({
+					"doctype": "Unallocated items",
+					"item": item.item_code,
+					"batch": item.batch_no,
+					"quantity": item.qty,
+					"warehouse": item.t_warehouse,
+					"ref_doctype": "Stock Entry" ,
+					"ref_docname": doc.name
+					})
 
-			uap.save(ignore_permissions=True)
-			uap.submit()
+				uap.save(ignore_permissions=True)
+				uap.submit()
 
-			uan = frappe.get_doc({
-				"doctype": "Unallocated items",
-				"item": item.item_code,
-				"batch": item.batch_no,
-				"qty": item.qty*-1,
-				"warehouse": item.s_warehouse,
-				"ref_doctype": "Stock Entry" ,
-				"ref_docname": doc.name
-				})
-			uan.save(ignore_permissions=True)
-			uan.submit()
+				uan = frappe.get_doc({
+					"doctype": "Unallocated items",
+					"item": item.item_code,
+					"batch": item.batch_no,
+					"quantity": item.qty*-1,
+					"warehouse": item.s_warehouse,
+					"ref_doctype": "Stock Entry" ,
+					"ref_docname": doc.name
+					})
+				uan.save(ignore_permissions=True)
+				uan.submit()
 def before_cancel_stock_entry(doc,methodName=None):
 	cancel_unalloc_items("Stock Entry",doc.name)
 
 def validate_stock_entry(doc,methodName=None):
-	if (doc.stock_entry_type == "Material Transfer") and (not doc.is_bundle_movement):
-		for item in doc.items:
-			sqlq = """select batch_no,sum(quantity) as quantity,warehouse from `tabUnallocated items`
-					where warehouse = '{warehouse}' and batch_no="{batch_no}" and docstatus=1""".format(
-						warehouse=item.s_warehouse,batch_no=item.batch_no)
-			count = frappe.db.sql(sqlq,as_dict=1)
-			if count:
-				if item.qty>count[0].quantity:
-					frappe.throw("Only {qty} qty available for Batch No {batch_no} in {warehouse}. Row {idx}".format(
-						qty=count[0].qty,
-						batch_no=item.batch_no,
-						warehouse=item.s_warehouse,
-						idx=item.idx))
+	if (doc.stock_entry_type == "Material Transfer"):
+		if not doc.is_bundle_movement:
+			for item in doc.items:
+				sqlq = """select batch_no,sum(quantity) as quantity,warehouse from `tabUnallocated items`
+						where warehouse = '{warehouse}' and batch_no="{batch_no}" and docstatus=1""".format(
+							warehouse=item.s_warehouse,batch_no=item.batch_no)
+				count = frappe.db.sql(sqlq,as_dict=1)
+				if count:
+					if item.qty>count[0]['quantity']:
+						frappe.throw("Only {qty} qty available for Batch No {batch_no} in {warehouse}. Row {idx}".format(
+							qty=count[0]['quantity'],
+							batch_no=item.batch_no,
+							warehouse=item.s_warehouse,
+							idx=item.idx))
