@@ -111,7 +111,8 @@ doc_events ={
 	},
 	"Delivery Note":{
 		"on_submit": "cefiro_customizations.events.on_submit_delivery_note",
-		"before_cancel": "cefiro_customizations.events.before_cancel_delivery_note"
+		"before_cancel": "cefiro_customizations.events.before_cancel_delivery_note",
+		"validate": "cefiro_customizations.events.validate_delivery_note"
 	},
 	"Item":{
 		"before_insert": "cefiro_customizations.events.check_if_batch_set"

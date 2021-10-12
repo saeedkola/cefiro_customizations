@@ -152,8 +152,7 @@ def on_submit_purchase_receipt(doc,methodName = None):
 		bm.save(ignore_permissions=True)
 		bm.submit()
 
-def on_submit_delivery_note(doc,methodName=None):
-	
+def on_submit_delivery_note(doc,methodName=None):	
 	for row in doc.product_bundle_inserter:
 		bundle_items = []
 		bm_list = frappe.get_all("Bundle Movement",
@@ -169,7 +168,7 @@ def on_submit_delivery_note(doc,methodName=None):
 				"item_code": bundle_item.item_code,
 				"batch"	: bundle_item.batch,
 				"qty"	: bundle_item.qty/bm.qty*row.bundle_qty*-1
-				})
+			})
 
 		bm = frappe.get_doc({
 			"doctype":"Bundle Movement",
@@ -187,10 +186,48 @@ def on_submit_delivery_note(doc,methodName=None):
 	if doc.against_sales_order:
 		delete_reserved_entries(doc.against_sales_order)
 
+	for item in doc.items:
+		if not item.created_from_bundle:
+			uan = frappe.get_doc({
+					"doctype": "Unallocated items",
+					"item": item.item_code,
+					"batch": item.batch_no,
+					"quantity": item.qty*-1,
+					"warehouse": item.warehouse,
+					"ref_doctype": "Delivery Note" ,
+					"ref_docname": doc.name
+					})
+
+			uan.save(ignore_permissions=True)
+			uan.submit()
+
+
+def validate_delivery_note(doc,methodName=None):
+	for row in doc.items:
+		if not row.created_from_bundle:
+			sqlq = """select batch_no,sum(quantity) as quantity,warehouse from `tabUnallocated items`
+					where warehouse = '{warehouse}' and batch_no="{batch_no}" and docstatus=1""".format(
+						warehouse=row.warehouse,
+						batch_no=row.batch_no
+					)
+			count = frappe.db.sql(sqlq,as_dict=1)
+			if count[0]['quantity']:
+				if row.qty>count[0]['quantity']:
+					frappe.throw("Only {qty} qty available for Batch No {batch_no} in {warehouse}. Row {idx}".format(
+						qty=count[0]['quantity'],
+						batch_no=row.batch_no,
+						warehouse=row.warehouse,
+						idx=row.idx))
+			else:
+				frappe.throw("No loose qty available for Batch No {batch_no} in {warehouse}. Row {idx}".format(					
+						batch_no=row.batch_no,
+						warehouse=row.warehouse,
+						idx=row.idx))
 
 
 def before_cancel_delivery_note(doc,methodName=None):	
 	cancel_bundle_movement("Delivery Note",doc.name)
+	cancel_unalloc_items("Repackage Bundle",doc.name)
 
 def before_cancel_purchase_receipt(doc,methodName=None):
 	cancel_bundle_movement("Purchase Receipt",doc.name)
@@ -357,6 +394,8 @@ def before_submit_stock_entry(doc,methodName=None):
 					})
 				uan.save(ignore_permissions=True)
 				uan.submit()
+
+
 def before_cancel_stock_entry(doc,methodName=None):
 	cancel_unalloc_items("Stock Entry",doc.name)
 
@@ -368,10 +407,15 @@ def validate_stock_entry(doc,methodName=None):
 						where warehouse = '{warehouse}' and batch_no="{batch_no}" and docstatus=1""".format(
 							warehouse=item.s_warehouse,batch_no=item.batch_no)
 				count = frappe.db.sql(sqlq,as_dict=1)
-				if count:
+				if count[0]['quantity']:
 					if item.qty>count[0]['quantity']:
 						frappe.throw("Only {qty} qty available for Batch No {batch_no} in {warehouse}. Row {idx}".format(
 							qty=count[0]['quantity'],
 							batch_no=item.batch_no,
 							warehouse=item.s_warehouse,
 							idx=item.idx))
+				else:
+					frappe.throw("No loose qty available for Batch No {batch_no} in {warehouse}. Row {idx}".format(					
+						batch_no=item.batch_no,
+						warehouse=item.s_warehouse,
+						idx=item.idx))
