@@ -8,6 +8,8 @@
  "field_order": [
   "posting_date",
   "posting_time",
+  "enter_without_party",
+  "customer",
   "section_break_3",
   "from_warehouse",
   "column_break_5",
@@ -78,12 +80,26 @@
    "options": "Bundle Transfer",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enter_without_party",
+   "fieldtype": "Check",
+   "label": "Enter without Party"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Party",
+   "mandatory_depends_on": "eval:!doc.enter_without_party",
+   "options": "Customer"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-09-18 00:30:35.287587",
+ "modified": "2021-10-14 16:32:34.878153",
  "modified_by": "Administrator",
  "module": "Cefiro Customizations",
  "name": "Bundle Transfer",
