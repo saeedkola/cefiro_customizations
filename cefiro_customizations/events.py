@@ -151,6 +151,20 @@ def on_submit_purchase_receipt(doc,methodName = None):
 		})
 		bm.save(ignore_permissions=True)
 		bm.submit()
+	for item in doc.items:
+		if not item.created_from_bundle:
+			uan = frappe.get_doc({
+					"doctype": "Unallocated items",
+					"item": item.item_code,
+					"batch_no": item.batch_no,
+					"quantity": item.qty*1,
+					"warehouse": item.warehouse,
+					"ref_doctype": "Purchase Receipt",
+					"ref_docname": doc.name
+					})
+
+			uan.save(ignore_permissions=True)
+			uan.submit()
 
 def on_submit_delivery_note(doc,methodName=None):	
 	for row in doc.product_bundle_inserter:
@@ -191,7 +205,7 @@ def on_submit_delivery_note(doc,methodName=None):
 			uan = frappe.get_doc({
 					"doctype": "Unallocated items",
 					"item": item.item_code,
-					"batch": item.batch_no,
+					"batch_no": item.batch_no,
 					"quantity": item.qty*-1,
 					"warehouse": item.warehouse,
 					"ref_doctype": "Delivery Note" ,
@@ -231,6 +245,7 @@ def before_cancel_delivery_note(doc,methodName=None):
 
 def before_cancel_purchase_receipt(doc,methodName=None):
 	cancel_bundle_movement("Purchase Receipt",doc.name)
+	cancel_unalloc_items("Repackage Bundle",doc.name)
 
 def before_cancel_consume_bundle(doc,methodName=None):
 	cancel_bundle_movement("Consume Bundle",doc.name)
@@ -373,7 +388,7 @@ def before_submit_stock_entry(doc,methodName=None):
 				uap = frappe.get_doc({
 					"doctype": "Unallocated items",
 					"item": item.item_code,
-					"batch": item.batch_no,
+					"batch_no": item.batch_no,
 					"quantity": item.qty,
 					"warehouse": item.t_warehouse,
 					"ref_doctype": "Stock Entry" ,
@@ -386,7 +401,7 @@ def before_submit_stock_entry(doc,methodName=None):
 				uan = frappe.get_doc({
 					"doctype": "Unallocated items",
 					"item": item.item_code,
-					"batch": item.batch_no,
+					"batch_no": item.batch_no,
 					"quantity": item.qty*-1,
 					"warehouse": item.s_warehouse,
 					"ref_doctype": "Stock Entry" ,
