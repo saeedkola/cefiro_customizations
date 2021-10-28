@@ -241,11 +241,11 @@ def validate_delivery_note(doc,methodName=None):
 
 def before_cancel_delivery_note(doc,methodName=None):	
 	cancel_bundle_movement("Delivery Note",doc.name)
-	cancel_unalloc_items("Repackage Bundle",doc.name)
+	cancel_unalloc_items("Delivery Note",doc.name)
 
 def before_cancel_purchase_receipt(doc,methodName=None):
 	cancel_bundle_movement("Purchase Receipt",doc.name)
-	cancel_unalloc_items("Repackage Bundle",doc.name)
+	cancel_unalloc_items("Purchase Receipt",doc.name)
 
 def before_cancel_consume_bundle(doc,methodName=None):
 	cancel_bundle_movement("Consume Bundle",doc.name)
