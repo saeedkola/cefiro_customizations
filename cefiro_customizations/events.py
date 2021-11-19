@@ -302,7 +302,8 @@ def on_submit_sales_order(doc,methodName=None):
 			 left join `tabWarehouse` t2 on t1.warehouse = t2.name
 			 where ifnull(t2.warehouse_type,"") != "Retention" and
 			 product_bundle='{}' and t1.docstatus in (0,1)
-			 group by product_bundle, bundle_batch,warehouse 	
+			 group by product_bundle, bundle_batch,warehouse
+			 having qty>0
 			 ORDER BY bundle_batch""".format(row.product_bundle)
 
 			data = frappe.db.sql(sqlq,as_dict=1)
