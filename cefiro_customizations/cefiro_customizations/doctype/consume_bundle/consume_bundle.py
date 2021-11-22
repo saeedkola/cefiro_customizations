@@ -12,7 +12,7 @@ class ConsumeBundle(Document):
 			for row in self.product_bundles:
 				sqlq = """select t1.product_bundle,t1.qty,t1.bundle_batch,t1.warehouse,t2.item_code,t2.batch as item_batch,t2.qty/t1.qty*{bundle_qty} as item_qty from `tabBundle Movement` t1 
 						left join `tabBundle Movement Item` t2 on t1.name =t2.parent
-						where t1.bundle_batch='{bundle_batch}' and t1.qty>0""".format(
+						where t1.bundle_batch='{bundle_batch}' and t1.qty>0  and t1.ref_doctype = 'Purchase Receipt'""".format(
 							bundle_qty=row.bundle_qty,
 							bundle_batch=row.bundle_batch
 							)
